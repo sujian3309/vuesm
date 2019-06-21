@@ -1,15 +1,15 @@
 <template>
   <div>
-      <p>Home diyicitijiao Component</p>
+    <p>Home Component</p>
   </div>
 </template>
 <script>
-    export default {
-      name: 'AppHome',
-      data () {
-        return {}
-      }
-    }
+export default {
+  name: 'AppHome',
+  data() {
+    return {};
+  }
+};
 </script>
 <style lang="less" scoped>
 </style>

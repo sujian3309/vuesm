@@ -5,7 +5,7 @@ export default new Router ({
   //配置路由
   routes: [
     {
-      //给路由起个名字
+      // 给路由起个名字
       name: 'home',
       path: '/home',
       //再整个项目中，模块路径中的，@表示是src目录
