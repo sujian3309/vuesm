@@ -39,36 +39,62 @@ export default {
     };
   },
   methods: {
-    handleLogin() {
-      console.log("submit!");
+    handleLogin () {
+      const { mobile, code } = this.form
+      axios({
+        method: 'POST',
+        url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
+        data: this.form
+      }).then(res => {
+        console.log(res.data)
+        this.$message({
+          message: '登陆成功',
+          type: 'success'
+        })
+        this.$router.push({
+          name: 'home'
+        })
+      })
+      //使用element ui 的提示组件
+      .catch((e) =>{
+         this.$message.error('登陆失败，手机号或者验证码错误')
+      })
     },
-    handleSendCode() {
-      const { mobile } = this.form;
+    handleSendCode () {
+      const { mobile } = this.form
       axios({
         method: "GET",
         url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
       }).then(res => {
-        const { data } = res.data;
-        window.initGeetest(
-          {
+        const { data } = res.data
+        window.initGeetest({
             // 以下配置参数来自服务端 SDK
             gt: data.gt,
             challenge: data.challenge,
             offline: !data.success,
             new_captcha: data.new_captcha,
-            product: "bind" //隐藏，直接弹出极验提供的参数
+            product: 'bind' //隐藏，直接弹出极验提供的参数
           },
           function (captchaObj) {
             // 这里可以调用验证实例 captchaObj 的实例方法
-            captchaObj.onReady (function() {
+            captchaObj.onReady (function () {
                 //验证码ready之后才能调用verify方法显示验证码
-                captchaObj.verify ()//弹出验证码内容框
-              })
-              .onSuccess (function () {//当用户输入合格的手机号码成功
+                captchaObj.verify()//弹出验证码内容框
+              }).onSuccess (function () {//当用户输入合格的手机号码成功
                 //your code
-                console.log (captchaObj.getValidate())
-              })
-              .onError(function() {//当用户输入的手机号不合格
+                  const { geetest_challenge: challenge, geetest_seccode: seccode, geetest_validate: validate } = captchaObj.getValidate()
+                axios({
+                  method:'GET',
+                  url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
+                  params: {
+                    challenge,
+                    validate,
+                    seccode
+                  }
+                }).then(res => {
+                  console.log(res.data);
+                })
+              }).onError(function () {//当用户输入的手机号不合格
                 //your code
               })
               //在这里初测”发送验证码“ 按钮的点击事件，验证用户是否输入手机号以及手机号是否有效，正确之后没有问题再去调用
@@ -78,10 +104,13 @@ export default {
       })
     }
   }
-};
+}
 </script>
 <style lang="less" scoped>
+
+  
 .login-wrap {
+  background: url('login_bg.jpg') no-repeat;
   height: 100%;
   // background-color: skyblue;
   display: flex;
